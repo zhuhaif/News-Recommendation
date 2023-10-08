@@ -1,0 +1,164 @@
+﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta content="基于大数据的个性化新闻推荐系统" http-equiv="keywords">
+	<meta name="description" content="基于大数据的个性化新闻推荐系统">
+	<meta name="applicable-device" content="pc,mobile">
+	<meta http-equiv="Cache-Control" content="no-siteapp"/>
+	<meta http-equiv="Cache-Control" content="no-transform" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>基于大数据的个性化新闻推荐系统</title>
+	<!-- 排版CSS -->
+	<link href="asserts/css/index.css" th:href="@{/asserts/css/index.css}" rel="stylesheet" >
+	<!-- Bootstrap core CSS -->
+	<link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+	<!-- 顶部CSS -->
+	<link href="asserts/css/blog.css" th:href="@{/asserts/css/blog.css}" rel="stylesheet">
+
+	<!-- 顶部js -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<!-- 排版js -->
+	<script type="text/javascript" src="asserts/js/jquery-1.11.0.min.js" th:src="@{/asserts/js/jquery-1.11.0.min.js}"></script>
+	<script type="text/javascript" src="asserts/js/jquery.SuperSlide.2.1.1.js" th:src="@{/asserts/js/jquery.SuperSlide.2.1.1.js}"></script>
+	<!-- 导航js等-->
+	<script type="text/javascript" src="asserts/js/public.js" th:src="@{/asserts/js/public.js}"></script>
+	<!-- 时间选择js -->
+	<script type="text/javascript" src="asserts/js/laydate.js" th:src="@{/asserts/js/laydate.js}"></script>
+
+</head>
+
+<body>
+	<div class="contentbox wid_main bora_5">
+		<!-- 主体内容框 -->
+		<div class="content">
+			<!-- 顶部信息 -->
+			<header class="blog-header py-3">
+				<div class="row flex-nowrap justify-content-between align-items-center">
+					<div class="col-4 pt-1">
+						<div class="btn-group dropright">
+							<button type="button" th:text="'Hello, '+${session.user.getUsername()}" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							</button>
+							<div class="dropdown-menu">
+								<a class="dropdown-item"  href="#" th:href="@{/browsingHistory}">历史记录</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="#" th:href="@{/user/logout}">注销</a>
+							</div>
+						</div>
+					</div>
+					<!-- logo -->
+					<div class="col-4 text-center">
+						<a class="blog-header-logo text-dark" href="#">NEWS</a>
+					</div>
+					<!-- 搜索 -->
+					<div class="col-4 d-flex justify-content-end align-items-center">
+						<form class="form-inline my-2 my-lg-0" action="#" th:action="@{/search}" method="get">
+							<input class="form-control mr-sm-2" type="search" name="keyWord" placeholder="请输入关键词检索" aria-label="Search">
+							<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+						</form>
+					</div>
+				</div>
+			</header>
+			<!-- 导航栏部分 -->
+			<div class="top_nav bg bora_5 ovh">
+				<ul class="fix">
+					<li th:class="${newsModule.getModuleName().equals('首页')} ? 'cur'" th:each="newsModule:${newsModules}">
+						<a href="#" th:href="@{/newsModule/}+${newsModule.getModuleId()}" th:text="${newsModule.moduleName}"></a>
+					</li>
+				</ul>
+			</div>
+			<!-- 最新国际新闻和时间 -->
+			<div class="gonggao bdb_d fix">
+				<!-- 最新国际新闻 -->
+				<div class="txtScroll-top l fix">
+					<div class="l tit"><img src="asserts/img/icon_notice.png" th:src="@{/asserts/img/icon_notice.png}"><b class="dib vm">国际滚动：</b></div>
+					<div class="bd l">
+						<ul class="infoList">
+							<li th:each="interNews:${interNews}">
+								<a href="#" th:href="@{/newsDetails/}+${interNews.getNewsId()}" th:text="${interNews.getTitle()}" th:title="${interNews.getTitle()}"></a>
+								<span class="date" th:text="${interNews.getDate()}"></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<script type="text/javascript">
+					jQuery(".txtScroll-top").slide({titCell:".hd ul",mainCell:".bd ul",effect:"topLoop",autoPlay:true,vis:1,interTime:4000,});
+				</script>
+				<!-- 时间 -->
+				<div class="timebox fc r">
+					<script type="text/javascript" src="asserts/js/show_date.js" th:src="@{/asserts/js/show_date.js}"></script>
+				</div>
+			</div>
+			<!-- 最新政务新闻 -->
+            <div class="gonggao important_news" style="text-align: center;">
+                <div class="tit dib vm"><img src="asserts/img/icon_hot.png" th:src="@{/asserts/img/icon_hot.png}"><b class="dib vm">政务要闻</b></div>
+                <h1><a href="#" th:href="@{/newsDetails/}+${latestGovernmentNews.getNewsId()}" th:text="${latestGovernmentNews.getTitle()}"></a></h1>
+            </div>
+			<!-- 推荐结果显示 -->
+			<div class="row">
+				<!-- 协同过滤新闻推荐结果显示 -->
+				<div class="col-sm-7">
+					<div class="card">
+						<div class="card-body">
+
+							<div class="sy_title bdb_d ovh">
+								<h2><b class="fc">个性推荐</b></h2>
+							</div>
+							<div class="card" th:style="'display: block;width: 668px;height: 120px'" th:each="personalRecommend:${personalRecommends}">
+								<div class="row no-gutters">
+									<div class="col-md-3" th:if="${personalRecommend.getPictureUrls().length() != 0}">
+										<img src="asserts/img/hotNews.jpg" class="card-img" width="160px" height="120px"
+											 th:src="@{${personalRecommend.getPictureUrlArray()[0]}}"/>
+									</div>
+									<div th:class="${personalRecommend.getPictureUrls().length() != 0} ? 'col-md-8'">
+										<div class="card-body" style="line-height:100%">
+											<h5><a th:style="'white-space: nowrap;text-overflow: ellipsis;overflow: hidden;display: block;width: '+ (${personalRecommend.getPictureUrls().length() == 0} ? '650px' : '480px')"
+												   class="card-title cut" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" href="#" th:href="@{/newsDetails/}+${personalRecommend.getNewsId()}+'?recommendType=个性'" th:text="${personalRecommend.getTitle()}" th:title="${personalRecommend.getTitle()}"></a></h5>
+											<p th:style="'white-space: nowrap;text-overflow: ellipsis;overflow: hidden;display: block;width: '+ (${personalRecommend.getPictureUrls().length() == 0} ? '650px' : '480px')"
+											   class="card-text cut" th:text="${personalRecommend.getSummary()}" th:title="${personalRecommend.getSummary()}"></p>
+											<small class="text-muted" th:text="${personalRecommend.getDate()} + ' ' + ${personalRecommend.getSource()}"></small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!-- 热点新闻推荐结果显示 -->
+				<div class="col-sm-5">
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="sy_title bdb_d ovh">
+								<h2 class="l"><b class="fc">热点速递</b></h2>
+								<a href="#"  class="dib vm r" style="color: #f00;" th:text="'换一换'"
+								   th:href="'?topPageNum=' + (${pageTopRecommends.isHasNextPage()} ? ${pageTopRecommends.nextPage} : '1')"></a>
+							</div>
+							<ul>
+								<li th:each="topRecommend:${pageTopRecommends.list}">
+									<b th:text="(${pageTopRecommends.pageNum} - 1) * ${pageTopRecommends.pageSize} + ${topRecommendStat.count}">·</b>
+									<a  href="#" th:href="@{/newsDetails/}+${topRecommend.getNewsId()}+'?recommendType=热点'" th:text="${topRecommend.getTitle()}" th:title="${topRecommend.getTitle()}"></a>
+									<span class="r" th:text="${topRecommend.getHeat()}"></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+		<!-- 返回顶部 -->
+		<div class="side_box">
+			<ul>
+				<li class="sidetop">
+					<span></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

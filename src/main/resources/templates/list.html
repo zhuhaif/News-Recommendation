@@ -1,0 +1,181 @@
+﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+	<meta content="基于大数据的个性化新闻推荐系统" http-equiv="keywords">
+	<meta name="description" content="基于大数据的个性化新闻推荐系统">
+	<meta name="applicable-device" content="pc,mobile">
+	<meta http-equiv="Cache-Control" content="no-siteapp"/>
+	<meta http-equiv="Cache-Control" content="no-transform" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title th:text="${title}">列表</title>
+    <!-- 排版CSS -->
+    <link href="asserts/css/index.css" th:href="@{/asserts/css/index.css}" rel="stylesheet">
+    <link href="asserts/css/children.css" th:href="@{/asserts/css/children.css}" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- 顶部CSS -->
+    <link href="asserts/css/blog.css" th:href="@{/asserts/css/blog.css}" rel="stylesheet">
+
+    <!-- 顶部js -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- 排版js -->
+    <script type="text/javascript" src="asserts/js/jquery-1.11.0.min.js"
+            th:src="@{/asserts/js/jquery-1.11.0.min.js}"></script>
+    <script type="text/javascript" src="asserts/js/jquery.SuperSlide.2.1.1.js"
+            th:src="@{/asserts/js/jquery.SuperSlide.2.1.1.js}"></script>
+    <!-- 导航js等-->
+    <script type="text/javascript" src="asserts/js/public.js" th:src="@{/asserts/js/public.js}"></script>
+    <!-- 时间选择js -->
+    <script type="text/javascript" src="asserts/js/laydate.js" th:src="@{/asserts/js/laydate.js}"></script>
+
+</head>
+
+<body>
+<div class="contentbox wid_main bora_5">
+    <!-- 主体内容框 -->
+    <div class="content">
+        <!-- 顶部信息 -->
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-4 pt-1">
+                    <div class="btn-group dropright">
+                        <button type="button" th:text="'Hello, '+${session.user.getUsername()}" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item"  href="#" th:href="@{/browsingHistory}">历史记录</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" th:href="@{/user/logout}">注销</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- logo -->
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="#">NEWS</a>
+                </div>
+                <!-- 搜索 -->
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/search}" method="get">
+                        <input class="form-control mr-sm-2" type="search" name="keyWord" placeholder="请输入关键词检索" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+        <!-- 导航栏部分 -->
+        <div class="top_nav bg bora_5 ovh">
+            <ul class="fix">
+                <li th:class="${title.equals(module.getModuleName())} ? 'cur'" th:each="module:${newsModules}">
+                    <a href="#" th:href="@{/newsModule/}+${module.getModuleId()}" th:text="${module.moduleName}"></a>
+                </li>
+            </ul>
+        </div>
+        <!-- 当前位置 -->
+        <div class="gonggao bdb_d fix">
+            <div class="txtScroll-top l fix zy_cur">
+                <div class="l tit"><img src="asserts/img/icon_location.png" th:src="@{/asserts/img/icon_location.png}"><b class="dib vm">当前位置：</b></div>
+                <p class="l"><a href="#" th:href="@{/news}">首页</a><span th:text="${title}"></span></p>
+            </div>
+
+            <!-- 时间 -->
+            <div class="timebox fc r">
+                <script type="text/javascript" src="js/show_date.js"></script>
+            </div>
+        </div>
+
+        <!-- 子页内容框 -->
+        <div class="zy_contentbox">
+            <!-- zy_content -->
+            <div class="zy_content fix">
+                <!-- 左边栏 -->
+                <div class="zy_left_con">
+                    <b></b>
+                    <!-- 二级菜单 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="zy_twonav">
+                                <ul>
+                                    <li th:class="${moduleId.equals(newsModule.getModuleId())} ? 'cur'"
+                                        style="text-align: center;" th:each="newsModule:${newsModules}">
+                                        <a href="#" th:href="'?keyWord=' + ${keyWord} + '&moduleId=' + ${newsModule.getModuleId()}"
+                                           th:text="${newsModule.getModuleId() == '1'} ? '全部' : ${newsModule.getModuleName()}">
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右边内容 -->
+                <div class="zy_right_con">
+                    <!-- 当前位置 -->
+                    <div class="zy_title fix">
+                        <h2>[[${title}]]<i></i></h2>
+                    </div>
+                    <!-- 内容展示块-->
+                    <div class="news_list zy_listbox">
+                        <!-- 展示分页新闻 -->
+                        <ul>
+                            <li th:each="news:${pageNews.list}">
+                                <b>·</b><a href="#" th:href="@{/newsDetails/}+${news.getNewsId()}+'?recommendType=非推荐'" th:text="${news.getTitle()}"></a><span th:text="${news.getDate()}"></span>
+                            </li>
+                        </ul>
+                        <!-- 通用分页 -->
+                        <div class="fanye" style="text-align: center;">
+                            <!-- 首页 -->
+                            <a th:if="${!pageNews.isFirstPage and (pageNews.getPages() != 0)}" href="#"
+                               th:href="'?keyWord=' + ${keyWord} +'&moduleId=' + ${moduleId} +'&pageNum=1'">首页</a>
+                            <!-- 上一页按钮，选择性显示 --><!--${#httpServletRequest.getRequestURL()}表示当前url，href中也可以不写，如下直接加参数-->
+                            <a th:if="${!pageNews.isFirstPage and (pageNews.getPages() != 0)}" aria-label="Previous"
+                               th:href="'?keyWord=' + ${keyWord} +'&moduleId=' + ${moduleId} +'&pageNum=' + ${pageNews.prePage}">
+                                <span aria-hidden="true"> << </span>
+                            </a>
+                            <!-- 当前页数 ，方便js调用 display:none;隐藏 -->
+                            <!--<span style="display:none;" id="pageNums">[[${pageNews.pageNum}]]</span>-->
+                            <!-- 页码 -->
+                            <div>
+                                <a href="#" th:class="${pageNews.pageNum == pageNum} ? 'current'" th:each="pageNum:${pageNums}"
+                                   th:href="'?keyWord=' + ${keyWord} +'&moduleId=' + ${moduleId} +'&pageNum=' + ${pageNum}">
+                                    <span aria-hidden="true">[[${pageNum}]]</span>
+                                </a>
+                            </div>
+                            <!-- 下一页 -->
+                            <a th:if="${!pageNews.isLastPage and (pageNews.getPages() != 0)}" href="#" aria-label="Next"
+                               th:href="'?keyWord=' + ${keyWord} +'&moduleId=' + ${moduleId} +'&pageNum=' + ${pageNews.nextPage}">
+                                <span aria-hidden="true"> >> </span>
+                            </a>
+                            <!-- 末页 -->
+                            <a th:if="${!pageNews.isLastPage and (pageNews.getPages() != 0)}" href="#"
+                               th:href="'?keyWord=' + ${keyWord} +'&moduleId=' + ${moduleId} +'&pageNum=' + ${pageNews.pages}">末页</a>
+                            <p>
+                                <span>[[${pageNews.total}]]条数据，共[[${pageNews.pages}]]页</span>
+                                <!--<span>转到第<input type="text" name="" value="2">页</span>
+                                <input type="submit" name="" value="确定">-->
+                            </p>
+                        </div>
+
+                        <!-- 通用分页end -->
+                    </div>
+                </div>
+            </div>
+            <!-- zy_content end -->
+        </div>
+
+    </div>
+
+
+
+    <!-- 返回顶部 -->
+    <div class="side_box">
+        <ul>
+            <li class="sidetop">
+                <span></span>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

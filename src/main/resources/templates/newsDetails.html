@@ -1,0 +1,247 @@
+﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta content="基于大数据的个性化新闻推荐系统" http-equiv="keywords">
+    <meta name="description" content="基于大数据的个性化新闻推荐系统">
+    <meta name="applicable-device" content="pc,mobile">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title th:text="${news.getTitle()}">新闻详情</title>
+    <!-- 排版CSS -->
+    <link href="asserts/css/index.css" th:href="@{/asserts/css/index.css}" rel="stylesheet">
+    <link href="asserts/css/children.css" th:href="@{/asserts/css/children.css}" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- 顶部CSS -->
+    <link href="asserts/css/blog.css" th:href="@{/asserts/css/blog.css}" rel="stylesheet">
+
+    <!-- 顶部js -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- 排版js -->
+    <script type="text/javascript" src="asserts/js/jquery-1.11.0.min.js"
+            th:src="@{/asserts/js/jquery-1.11.0.min.js}"></script>
+    <script type="text/javascript" src="asserts/js/jquery.SuperSlide.2.1.1.js"
+            th:src="@{/asserts/js/jquery.SuperSlide.2.1.1.js}"></script>
+    <!-- 导航js等-->
+    <script type="text/javascript" src="asserts/js/public.js" th:src="@{/asserts/js/public.js}"></script>
+    <!-- 时间选择js -->
+    <script type="text/javascript" src="asserts/js/laydate.js" th:src="@{/asserts/js/laydate.js}"></script>
+
+</head>
+
+<body>
+<div class="contentbox wid_main bora_5">
+    <!-- 主体内容框 -->
+    <div class="content">
+        <!-- 顶部信息 -->
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-4 pt-1">
+                    <div class="btn-group dropright">
+                        <button type="button" th:text="'Hello, '+${session.user.getUsername()}"
+                                class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item"  href="#" th:href="@{/browsingHistory}">历史记录</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" th:href="@{/user/logout}">注销</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- logo -->
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="#">NEWS</a>
+                </div>
+                <!-- 搜索 -->
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <form class="form-inline my-2 my-lg-0" action="#" th:action="@{/search}" method="get">
+                        <input class="form-control mr-sm-2" type="search" name="keyWord" placeholder="请输入关键词检索" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+        <!-- 导航栏部分 -->
+        <div class="top_nav bg bora_5 ovh">
+            <ul class="fix">
+                <li th:class="${newsModule.getModuleName().equals(module.getModuleName())} ? 'cur'"
+                    th:each="module:${newsModules}">
+                    <a href="#" th:href="@{/newsModule/}+${module.getModuleId()}" th:text="${module.moduleName}"></a>
+                </li>
+            </ul>
+        </div>
+        <!-- 当前位置 -->
+        <div class="gonggao bdb_d fix">
+            <div class="txtScroll-top l fix zy_cur">
+                <div class="l tit"><img src="asserts/img/icon_location.png"
+                                        th:src="@{/asserts/img/icon_location.png}"><b class="dib vm">当前位置：</b></div>
+                <p class="l">
+                    <a href="#" th:href="@{/news}">首页</a>
+                    <a href="#" th:href="@{/newsModule/}+${newsModule.getModuleId()}" th:text="${newsModule.getModuleName()}"></a>
+                    <span th:text="${news.getTitle()}">新闻详情</span>
+                </p>
+            </div>
+
+            <!-- 时间 -->
+            <div class="timebox fc r">
+                <script type="text/javascript" src="asserts/js/show_date.js"
+                        th:src="@{/asserts/js/show_date.js}"></script>
+            </div>
+        </div>
+
+        <!-- 子页内容框 -->
+        <div class="zy_contentbox">
+            <!-- zy_content -->
+            <div class="zy_content fix">
+                <!-- 左边栏 -->
+                <div class="zy_left_con"  style="width: 380px;">
+                    <!-- 相似内容推荐 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="sy_title bdb_d ovh">
+                                <h4 class="fc" style="text-align: center;">相似内容推荐</h4>
+                                <a href="#" th:if="${!similarRecommends.isFirstPage and (similarRecommends.getPages() != 0)}" class="l" style="color: #f00;" th:text="'<上一页'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.prePage} + '&authorPageNum=' + ${authorRecommends.getPageNum()} + '&commentPageNum=' + ${pageComments.getPageNum()}"></a>
+                                <a href="#" th:if="${!similarRecommends.isLastPage}" class="r"  style="color: #f00;" th:text="'下一页>'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.nextPage} + '&authorPageNum=' + ${authorRecommends.getPageNum()} + '&commentPageNum=' + ${pageComments.getPageNum()}"></a>
+                            </div>
+                            <ul>
+                                <li th:each="similarRecommend:${similarRecommends.list}">
+                                    <a href="#" th:href="@{/newsDetails/}+${similarRecommend.getNewsId()} + '?recommendType=内容&sourceNewsId='+ ${news.getNewsId()}"
+                                       th:text="${similarRecommend.getTitle()}" th:title="${similarRecommend.getTitle()}">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- 相似作者推荐 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="sy_title bdb_d ovh">
+                                <h4 class="fc" style="text-align: center;">相似作者推荐</h4>
+                                <a href="#" th:if="${!authorRecommends.isFirstPage and (similarRecommends.getPages() != 0)}" class="l" style="color: #f00;" th:text="'<上一页'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.getPageNum()} + '&authorPageNum=' + ${authorRecommends.prePage} + '&commentPageNum=' + ${pageComments.getPageNum()}"></a>
+                                <a href="#" th:if="${!authorRecommends.isLastPage}" class="r" style="color: #f00;" th:text="'下一页>'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.getPageNum()} + '&authorPageNum=' + ${authorRecommends.nextPage} + '&commentPageNum=' + ${pageComments.getPageNum()}"></a>
+                            </div>
+                            <ul>
+                                <li th:each="authorRecommend:${authorRecommends.list}">
+                                    <a href="#" th:href="@{/newsDetails/}+${authorRecommend.getNewsId()}"
+                                       th:text="${authorRecommend.getTitle()}" th:title="${authorRecommend.getTitle()}">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- 用户评论 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="sy_title bdb_d ovh">
+                                <h4 class="fc l">用户评论</h4>
+                                <span class="fc r">[[${pageComments.total}]]条评论，共[[${pageComments.pages}]]页</span>
+                            </div>
+                            <div class="card" th:style="'display: block;'" th:each="comment:${pageComments.list}">
+                                <div class="card-body" style="line-height:100%">
+                                    <div class="row no-gutters">
+                                        <h5 th:style="'white-space: nowrap;text-overflow: ellipsis;overflow: hidden;display: block;width: 180px'"
+                                               class="card-title cut"  href="#" th:text="${comment.getUsername()}" th:title="${comment.getUsername()}"></h5>
+                                        <small th:style="'white-space: nowrap;text-overflow: ellipsis;overflow: hidden;display: block'"
+                                                class="text-muted r" th:text="${comment.getCommentTime()}"></small>
+                                    </div>
+                                    <p class="card-text" th:text="${comment.getContent()}"></p>
+                                </div>
+                            </div>
+                            <!-- 换页按钮 -->
+                            <div class="sy_title bdb_d ovh">
+                                <a href="#" th:if="${!pageComments.isFirstPage and (pageComments.getPages() != 0)}" class="l" style="color: #f00;" th:text="'<上一页'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.getPageNum()} + '&authorPageNum=' + ${authorRecommends.getPageNum()} + '&commentPageNum=' + ${pageComments.getPrePage()}"></a>
+                                <a href="#" th:if="${!pageComments.isLastPage}" class="r" style="color: #f00;" th:text="'下一页>'"
+                                   th:href="'?contentPageNum=' + ${similarRecommends.getPageNum()} + '&authorPageNum=' + ${authorRecommends.getPageNum()} + '&commentPageNum=' + ${pageComments.getNextPage()}"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 发表评论 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="form-group" action="#" th:action="@{/user/comment/}+${news.getNewsId()} + '?sourceNewsId=' + ${sourceNewsId}" method="post">
+                                <div class="sy_title bdb_d ovh">
+                                    <h4 class="fc l">发表评论</h4>
+                                    <button type="submit" class="btn btn-primary r">发表</button>
+                                </div>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" name="comment" rows="6"></textarea>
+                                <input type="hidden" name="contentPageNum" th:value="${similarRecommends.getPageNum()}">
+                                <input type="hidden" name="authorPageNum" th:value="${authorRecommends.getPageNum()}">
+                                <input type="hidden" name="commentPageNum" th:value="${pageComments.getPageNum()}">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右边内容 -->
+                <div class="zy_right_con" style="width: 850px;">
+                    <!-- 内容展示块-->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="news_list zy_listbox">
+                                <iframe th:src="@{/asserts/news/}+${news.getUrl()}" id="iframepage" name="iframepage" frameborder="0" width="100%"
+                                        scrolling="auto" leftmargin="0" topmargin="0" onLoad="IframeLoadEND();"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- js实现自动调整iframe长度-->
+                    <script type="text/javascript" language="javascript">
+                        // 定义一个函数，定时调用并刷新iframe高度
+                        function reinitIframe(){
+                            var iframe = document.getElementById("iframepage");
+                            try{
+                                var bHeight = iframe.contentWindow.document.body.scrollHeight;
+                                var dHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+                                var height = Math.max(bHeight, dHeight);
+                                iframe.height = height;
+                            }catch (ex){}
+                        }
+                        var timer1 = window.setInterval("reinitIframe()", 500); //定时调用开始
+                        //完毕后干掉定时器
+                        function IframeLoadEND(){
+                            var iframe = document.getElementById("iframepage");
+                            try{
+                                window.clearInterval(timer1);
+                                var bHeight = iframe.contentWindow.document.body.scrollHeight;
+                                var dHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+                                var height = Math.max(bHeight, dHeight);
+                                iframe.height = height;
+                            }catch (ex){}
+                            // 停止定时
+                            window.clearInterval(timer1);
+                        }
+                    </script>
+                </div>
+            </div>
+            <!-- zy_content end -->
+        </div>
+    </div>
+
+    <!-- 返回顶部 -->
+    <div class="side_box">
+        <ul>
+            <li class="sidetop">
+                <span></span>
+            </li>
+        </ul>
+    </div>
+
+    <input type="hidden" id="msg" th:value="${commentResult}">
+    <script type="text/javascript">
+        var msg = document.getElementById("msg").value;
+        if(msg != "未发表评论") {
+            alert(msg);
+        }
+    </script>
+</div>
+</body>
+</html>
